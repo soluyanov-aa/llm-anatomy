@@ -1,0 +1,25 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+.vite/
+.cache/
+playwright-report/
+test-results/
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+.venv/
+__pycache__/
+
+# Locally inspected model weights
+*.gguf
+*.safetensors
+*.pt
+*.pth
+*.ckpt
