@@ -1,3 +1,4 @@
+import {t} from './i18n.js';
 import React from 'react';
 
 export default class MapErrorBoundary extends React.Component {
@@ -7,7 +8,7 @@ export default class MapErrorBoundary extends React.Component {
   if(previous.model!==this.props.model&&this.state.error) this.setState({error:null});
  }
  render() {
-  if(this.state.error) return <section className="section-intro" role="alert"><h2>Не удалось построить карту</h2><p>{this.state.error.message}</p><p>Можно открыть другую модель или вернуться в «Анатомию».</p><button className="tiny-btn" onClick={()=>this.setState({error:null})}>Повторить</button></section>;
+  if(this.state.error) return <section className="section-intro" role="alert"><h2>{t("Не удалось построить карту")}</h2><p>{this.state.error.message}</p><p>{t("Можно открыть другую модель или вернуться в «Анатомию».")}</p><button className="tiny-btn" onClick={()=>this.setState({error:null})}>{t("Повторить")}</button></section>;
   return this.props.children;
  }
 }
