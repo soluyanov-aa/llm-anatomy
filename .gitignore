@@ -23,3 +23,6 @@ __pycache__/
 *.pt
 *.pth
 *.ckpt
+
+# Agent credentials must stay outside version control
+AGENTS.creds.json

@@ -9,7 +9,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs",
     "build:standalone": "node scripts/build-standalone.mjs",
-    "check:standalone": "node scripts/build-standalone.mjs --check"
+    "check:standalone": "node scripts/build-standalone.mjs --check",
+    "push:all": "node scripts/push-all.mjs"
   },
   "dependencies": {
     "@xyflow/react": "^12.9.3",
