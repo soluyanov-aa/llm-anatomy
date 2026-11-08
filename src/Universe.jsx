@@ -7,6 +7,12 @@ import {createPlaybackClock} from './playback.js';
 const ENTITY_COLORS={layer:'#ac8cff',attention:'#36d9f5',q:'#52efb0',kv:'#1aa1ff',ffn:'#ff9755',expert:'#f576c8',norm:'#e8ce68',tensor:'#83a5ff',particle:'#f1f5ff',embedding:'#e373ff',output:'#ff657d'};
 const ENTITY_LABELS=()=>({layer:t("Слои"),attention:t('Attention'),q:t('Q heads'),kv:t('KV heads'),ffn:t('FFN / MoE'),expert:t("Эксперты"),norm:t("Нормализация"),tensor:t("Тензоры"),particle:t("Элементы весов"),embedding:t('Embeddings'),output:t('LM Head')});
 function entityType(n){if(n.kind==='particle')return 'particle';if(n.kind==='tensor')return 'tensor';if(n.kind==='blocks')return 'layer';if(n.name.startsWith('KV Head'))return 'kv';if(n.name.startsWith('Q Head'))return 'q';if(n.name.startsWith('Expert'))return 'expert';if(/Norm/.test(n.name))return 'norm';if(n.name==='Attention')return 'attention';if(/FFN|MoE/.test(n.name))return 'ffn';if(n.name==='Embeddings')return 'embedding';if(n.name==='LM Head')return 'output';return 'tensor'}
+function drawEntity(ctx,{x,y,r},color){
+ ctx.fillStyle='#020711cc';ctx.beginPath();ctx.arc(x+r*.24,y+r*.3,r*1.04,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#e5edffb8';ctx.lineWidth=Math.max(.75,Math.min(1.5,r*.14));ctx.stroke();
+ ctx.fillStyle='#ffffff80';ctx.beginPath();ctx.arc(x-r*.28,y-r*.32,Math.max(.4,r*.27),0,Math.PI*2);ctx.fill();ctx.lineWidth=1;
+}
 export default function Universe({m}){
  const language=useLanguage();
  const speed=useRef(1),progressRef=useRef(0);const [speedPower,setSpeedPower]=useState(0);
@@ -47,7 +53,7 @@ export default function Universe({m}){
   ctx.beginPath();ctx.moveTo(pts[source].x,pts[source].y);ctx.lineTo(pts[target].x,pts[target].y);ctx.stroke();
  });
  ctx.lineWidth=1;
- [...pts].sort((a,b)=>b.depth-a.depth).forEach(p=>{ctx.globalAlpha=hasSelection?(focused.has(p.i)?1:.15):running&&!isActive(p)?.3:1;const color=ENTITY_COLORS[entityType(p.n)];ctx.fillStyle=color;if(p.n.kind==='blocks'){ctx.strokeStyle=color+'55';ctx.beginPath();ctx.ellipse(p.x,p.y,p.r*2.7,p.r*1.8,0,0,Math.PI*2);ctx.stroke()}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();if(p.n===selected){ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,p.r+4,0,Math.PI*2);ctx.stroke();ctx.lineWidth=1;}if(focused.has(p.i)||p.n.level===0||(zoom>2.5&&p.n.level===1)||(zoom>6&&p.n.level===2)){ctx.font=p.n.level===0?'14px Inter, sans-serif':'12px Inter, sans-serif';ctx.fillStyle='#dbe4ff';ctx.fillText(displayNames[p.i],p.x+p.r+4,p.y+4)}});
+ [...pts].sort((a,b)=>b.depth-a.depth).forEach(p=>{ctx.globalAlpha=hasSelection?(focused.has(p.i)?1:.15):running&&!isActive(p)?.3:1;const color=ENTITY_COLORS[entityType(p.n)];if(p.n.kind==='blocks'){ctx.strokeStyle=color+'88';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r*2.7,p.r*1.8,0,0,Math.PI*2);ctx.stroke()}drawEntity(ctx,p,color);if(p.n===selected){ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,p.r+4,0,Math.PI*2);ctx.stroke();ctx.lineWidth=1;}if(focused.has(p.i)||p.n.level===0||(zoom>2.5&&p.n.level===1)||(zoom>6&&p.n.level===2)){ctx.font=p.n.level===0?'14px Inter, sans-serif':'12px Inter, sans-serif';ctx.fillStyle='#dbe4ff';ctx.fillText(displayNames[p.i],p.x+p.r+4,p.y+4)}});
  ctx.globalAlpha=1;
  if(running&&roots.length){
  const idx=Math.floor(progress)%roots.length,a=roots[idx],b=roots[(idx+1)%roots.length],t=progress%1;
