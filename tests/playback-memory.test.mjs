@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPlaybackClock} from '../src/playback.js';
 import {estimateMemory} from '../src/memory.js';
-import {demoDense} from '../src/demo.js';
+const measurement={layers:2,hidden:64,heads:4,kvHeads:2,fileSize:2*1024**3};
 test('animation uses frame deltas, never document uptime, on start and effect restart',()=>{
  let tick=createPlaybackClock();let progress=0;
  progress+=tick(100000,true);assert.equal(progress,0);
@@ -17,11 +17,11 @@ test('paused and hidden time is excluded and long stalls are bounded',()=>{
  assert.equal(tick(200000,true),100);
 });
 test('unknown or partial weights never produce placement totals',()=>{
- for(const m of [{...demoDense,format:'Config JSON',fileSize:89},{...demoDense,weightsSize:null},{...demoDense,partial:true}]){
+ for(const m of [{...measurement,format:'Config JSON',fileSize:89},{...measurement,weightsSize:null},{...measurement,partial:true}]){
   const r=estimateMemory(m,32768);assert.equal(r.weightsKnown,false);assert.equal(r.weights,null);assert.equal(r.buffer,null);assert.equal(r.total,null);assert.ok(r.kv>0);
  }
 });
 test('known weights preserve VRAM estimate and batch scaling',()=>{
- const a=estimateMemory(demoDense,32768,1),b=estimateMemory(demoDense,32768,2);
- assert.equal(a.weightsKnown,true);assert.equal(a.weights,5.1);assert.equal(b.kv,2*a.kv);assert.equal(a.total,a.weights+a.kv+a.buffer);
+ const a=estimateMemory(measurement,32768,1),b=estimateMemory(measurement,32768,2);
+ assert.equal(a.weightsKnown,true);assert.equal(a.weights,2);assert.equal(b.kv,2*a.kv);assert.equal(a.total,a.weights+a.kv+a.buffer);
 });
